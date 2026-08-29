@@ -7,65 +7,65 @@ SIGNAL SIFTER REPORT
    Reviews: 1902
    Updated: 2026-08-09
 
-2. Cache Rocket
-   Score: 87.02
-   Installs: 64000
-   Rating: 4.8
-   Reviews: 1902
-   Updated: 2026-08-09
-
-3. SEO Toolkit Pro
+2. SEO Toolkit Pro
    Score: 87.0
    Installs: 128000
    Rating: 4.7
    Reviews: 4410
    Updated: 2026-08-20
 
-4. Landing Page Kit
+3. Landing Page Kit
    Score: 82.0
    Installs: 73000
    Rating: 4.2
    Reviews: 2010
    Updated: 2026-08-12
 
-5. Image Squeeze
+4. Image Squeeze
    Score: 81.8
    Installs: 88000
    Rating: 4.4
    Reviews: 1780
    Updated: 2026-08-16
 
-6. Shop Sidekick
+5. Shop Sidekick
    Score: 80.0
    Installs: 91000
    Rating: 4.0
    Reviews: 2140
    Updated: 2026-08-02
 
-7. Theme Tweaker
+6. Theme Tweaker
    Score: 78.0
    Installs: 1400000
    Rating: 3.8
    Reviews: 31000
    Updated: 2026-07-05
 
-8. Search Sharp
+7. Search Sharp
    Score: 77.1
    Installs: 52000
    Rating: 4.3
    Reviews: 1410
    Updated: 2026-08-25
 
-9. smart form builder 
-   Score: 75.52
-   Installs: 56180
-   Rating: 4.2
-   Reviews: 1352
-   Updated: 2026-08-13
-
-10. Smart Form Builder
+8. Smart Form Builder
    Score: 75.4
    Installs: 56000
    Rating: 4.2
    Reviews: 1340
    Updated: 2026-08-11
+
+9. Dark Mode Switch
+   Score: 65.5
+   Installs: 41000
+   Rating: 4.4
+   Reviews: 1050
+   Updated: 2026-08-04
+
+10. Form Canary
+   Score: 63.12
+   Installs: 42000
+   Rating: 4.3
+   Reviews: 812
+   Updated: 2026-08-14

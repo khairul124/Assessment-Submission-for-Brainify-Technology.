@@ -4,7 +4,6 @@ Tests for parser.py - load_products() and normalize_product()
 import sys
 import os
 import json
-import tempfile
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
@@ -106,6 +105,10 @@ class TestNormalizeProduct:
         data["updated_at"] = "2026-06-10T12:00:00Z"
         p = normalize_product(data)
         assert p.last_updated == date(2026, 6, 10)
+
+    def test_slash_separated_date(self):
+        p = normalize_product(self._base(last_updated="2026/07/11"))
+        assert p.last_updated == date(2026, 7, 11)
 
     def test_category_defaults_to_unknown(self):
         data = self._base()

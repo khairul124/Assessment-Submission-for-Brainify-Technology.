@@ -11,11 +11,11 @@ from models import Product
 from duplication import remove_duplicates
 
 
-def make_product(pid, name="Test Product"):
+def make_product(pid, name="Test Product", url=None):
     return Product(
         id=pid,
         name=name,
-        url=f"https://example.com/{pid}",
+        url=url or f"https://example.com/{pid}",
         installs=1000,
         rating=4.0,
         review_count=100,
@@ -48,6 +48,13 @@ class TestRemoveDuplicates:
         assert len(result) == 2
         assert result[0].name == "Original"
         assert result[1].id == "y-002"
+
+    def test_duplicates_with_different_id_same_url_with_query_params(self):
+        p1 = make_product("cr-100", name="Cache Rocket", url="https://example.com/cache-rocket")
+        p2 = make_product("cr-101", name="Cache Rocket", url="https://example.com/cache-rocket?utm_source=email")
+        result = remove_duplicates([p1, p2])
+        assert len(result) == 1
+        assert result[0].id == "cr-100"
 
     def test_preserves_order(self):
         ids = ["c-003", "a-001", "b-002"]

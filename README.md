@@ -1,67 +1,195 @@
-﻿# Assessment-Submission-for-Brainify-Technology
+﻿# Signal Sifter
 
-## How I approached this project
+Signal Sifter is a Python command-line program that processes messy product listing JSON files, normalizes the data into a consistent structure, removes duplicate products, calculates a score, and generates a ranked top-10 report.
 
-First half-hour I spent researching pydantic because I never used it before.I watched some videos and read the docs to understand how to work with it and what are the benefits of using it. video link: https://www.youtube.com/watch?v=XIdQ6gO3Anc&t=131s
+## Features
 
----
-
-## What I built
-
-### models.py
-I defined the `Product` model using pydantic `BaseModel`. It holds all the fields like id, name, url, installs, rating, review_count, last_updated, category and score.
-
-### parser.py
-This is the most important part of the project. The json files are messy and each file use different field names for the same data. So I wrote a `normalize_product()` function that handle all the different schemas.
-
-Some files also have encoding issues — some are UTF-8 and some are latin-1. I try UTF-8 first and fall back to latin-1 if it fails because latin-1 is a superset of ASCII and can handle most characters. If a file is totally broken json I just skip it and print a warning so the whole program doesn't crash.
-
-### scoring.py
-This one was easier because all the rules are in the brief. I just create a function that:
-1. First check if the product was updated in the last 90 days — if not return 0
-2. If yes then calculate the score using installs, rating and reviews with the given formula
-
-### duplication.py
-Simple but important — I use a set to track seen IDs and only keep the first occurrence of each product. This is O(n) so it's efficient.
-
-### main.py
-Calls everything in order — load products → remove duplicates → score each product → sort by score → take top 10 → generate reports.
-
-### reports.py
-Writes the top 10 to both `output/report.json` (machine-readable) and `output/report.txt` (human-readable).
+* Reads product records from JSON files in the `data/` folder
+* Handles different field names for the same information
+* Handles numbers provided as strings, such as `"18,300"`
+* Handles nested `stats` data
+* Parses both ISO-8601 date strings and Unix timestamp formats
+* Validates normalized data using Pydantic
+* Deduplicates product records by ID
+* Calculates product scores using the required formula
+* Applies the 90-day staleness rule — stale products score 0
+* Generates JSON and human-readable text reports
+* Includes tests for important functionality
 
 ---
 
-## Testing
+## Project Structure
 
-I wrote tests for all three main modules under `tests/`:
-
-- `test_duplication.py` — 8 tests for the deduplication logic
-- `test_scoring.py` — 9 tests for the scoring function (checking staleness, caps, rounding etc)
-- `test_parser.py` — 15 tests for the parser (all the different field schemas, date formats, bad json handling)
-
-All 32 tests pass.
-
+```text
+coding-assessment/
+│
+├── signal-sifter-takehome/
+│   ├── models.py          # Pydantic Product model
+│   ├── parser.py          # Loads and normalizes JSON files
+│   ├── duplication.py     # Removes duplicate products
+│   ├── scoring.py         # Calculates product score
+│   ├── reports.py         # Writes output files
+│   ├── main.py            # Entry point
+│   │
+│   ├── data/              # Input JSON files (40 listings)
+│   ├── output/            # Generated reports
+│   │   ├── report.json
+│   │   └── report.txt
+│   │
+│   └── tests/
+│       ├── conftest.py
+│       ├── test_duplication.py
+│       ├── test_parser.py
+│       └── test_scoring.py
+│
+├── requirements.txt
+├── README.md
+└── decission.md
 ```
+
+---
+
+## Requirements
+
+* Python 3.10 or newer
+* pip
+
+---
+
+## Installation
+
+Create a virtual environment:
+
+```bash
+python -m venv .venv
+```
+
+Activate it on Windows:
+
+```bash
+.venv\Scripts\activate
+```
+
+Activate it on macOS/Linux:
+
+```bash
+source .venv/bin/activate
+```
+
+Install the dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## Running the Program
+
+```bash
+cd signal-sifter-takehome
+python main.py
+```
+
+The program reads all JSON files from the `data/` folder and writes the top-10 ranked products to the `output/` folder.
+
+---
+
+## Output
+
+```text
+output/
+├── report.json
+└── report.txt
+```
+
+### JSON Report
+
+Machine-readable. Contains the ranked top-10 products with all fields.
+
+### Text Report
+
+Human-readable summary. Each product entry includes:
+
+* Rank
+* Product name
+* Score
+* Install count
+* Rating
+* Review count
+* Last-updated date
+
+---
+
+## Scoring
+
+The score follows the formula from the assignment:
+
+```text
+installs_points = min(installs / 1000, 50)
+
+rating_points = (rating - 3.0) * 10
+
+review_points = min(review_count / 100, 20)
+
+score = installs_points + rating_points + review_points
+```
+
+The scoring reference date is fixed at:
+
+```text
+2026-09-01
+```
+
+Products last updated more than 90 days before this date receive a score of `0`.
+
+---
+
+## Running Tests
+
+```bash
 python -m pytest signal-sifter-takehome/tests/ -v
 ```
 
+The tests cover:
+
+* Score calculation (staleness, caps, rounding, edge cases)
+* Data normalization (all alternate field schemas, date formats)
+* Deduplication (ordering, first-occurrence, multiple groups)
+* File loading (bad JSON skipped, multiple files, empty directory)
+
+All 32 tests pass.
+
 ---
 
-## Problems I faced
+## Design Notes
 
-- The json files use different field names (like `title` vs `name` vs `product_name`) so I had to handle all the cases
-- Some files have encoding issues — solved by trying UTF-8 first and falling back to latin-1
-- One file (`listing_040.json`) has broken/incomplete json — the parser skips it gracefully
-- At some point I found that some files were not saved properly and the code was not working. I used Antigravity to check and fix the issue.
+The input JSON files use inconsistent field names for the same data. The parser normalizes everything before validation. For example:
+
+```text
+title / name / product_name  →  name
+
+installs / install_count / stats.installs  →  installs
+
+last_updated / updated_at / modified  →  last_updated
+```
+
+This lets the rest of the application work with a single consistent `Product` model.
+
+More detailed design decisions, limitations, time spent, and AI usage are documented in `decission.md`.
 
 ---
 
-## How long it took
+## Clean Machine Setup
 
-It took around 4.5 hours total including the research about pydantic, writing the code, debugging and writing the tests.
+1. Clone the repository
+2. Make sure Python 3.10+ is installed
+3. Create and activate a virtual environment
+4. Run `pip install -r requirements.txt`
+5. Run `python main.py` from inside `signal-sifter-takehome/`
+6. Run `pytest` to execute the tests
 
-I tried not to use AI tools for everything — mostly used ChatGPT website to understand concepts and some tricky parts of parser.py. But when I got stuck on a bug I used Antigravity to debug and fix it. I learned a lot of new things while working on this project.
+No database or external service is required.
 
 ---
 

@@ -5,7 +5,7 @@ from models import Product
 
 def load_products(data_dir: str):
     products = []
-    for file in Path(data_dir).glob("*.jsonl"):
+    for file in Path(data_dir).glob("*.json"):
       try:
            try:
               text=file.read_text(encoding="utf-8")
@@ -15,7 +15,7 @@ def load_products(data_dir: str):
            product= normalize_product(data)
 
            if product:
-              product.append(product)
+              products.append(product)
       except json.JSONDecodeError:
             print(f"Skipping invalid JSON: {file.name}")
       except Exception as e:

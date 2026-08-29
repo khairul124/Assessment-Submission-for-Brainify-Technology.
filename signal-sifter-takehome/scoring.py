@@ -5,6 +5,6 @@ def calculate_score(product):
     if age_days>90:
         return 0
     installs_point=min(product.installs/1000,50)
-    rating_points = (product.ratting - 3.0) * 10
+    rating_points = (product.rating - 3.0) * 10
     review_points = min(product.review_count / 100, 20)
-    return round(installs_points + rating_points+ review_points,2,)
+    return round(installs_point + rating_points+ review_points,2,)
